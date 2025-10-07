@@ -666,3 +666,97 @@ class EnphaseEVClient:
             return data.get("data") or []
         except Exception:
             return None
+
+    async def vpp_events(self, program_id: str, start_date: str = "", end_date: str = "",
+                        sort_by: str = "", ascending: str = "", time: str = "") -> dict:
+        """Fetch VPP (Virtual Power Plant) events.
+
+        GET https://gs.enphaseenergy.com/vpp-mgr/api/v1/events/get
+        Query params: site_id, programId, start_date, end_date, sort_by, ascending, time
+        Returns VPP event data for the site.
+        Requires Authorization: Bearer token from cookies.
+        """
+        url = f"https://gs.enphaseenergy.com/vpp-mgr/api/v1/events/get"
+        params = {
+            "site_id": self._site,
+            "programId": program_id,
+            "start_date": start_date,
+            "end_date": end_date,
+            "sort_by": sort_by,
+            "ascending": ascending,
+            "time": time,
+        }
+        # Keep all parameters including empty ones as the API expects them
+        from urllib.parse import urlencode
+        query_string = urlencode(params)
+        full_url = f"{url}?{query_string}"
+
+        # VPP endpoint requires the JWT token directly as Authorization (not "Bearer {token}")
+        headers = dict(self._h)
+        bearer = self._bearer()
+        if bearer:
+            headers["Authorization"] = bearer  # Raw JWT, no "Bearer" prefix
+            headers["Origin"] = "https://enlighten.enphaseenergy.com"
+            headers["Referer"] = "https://enlighten.enphaseenergy.com/"
+        else:
+            _LOGGER.warning("No bearer token available for VPP events API")
+
+        _LOGGER.debug("VPP Events API call: %s", full_url)
+        _LOGGER.debug("VPP Events has Authorization: %s, has e-auth-token: %s",
+                     "Authorization" in headers, "e-auth-token" in headers)
+        result = await self._json("GET", full_url, headers=headers)
+        _LOGGER.debug("VPP Events API response event count: %s",
+                     len(result.get("data", [])) if isinstance(result, dict) else "unknown")
+        return result
+
+    async def savings_today(self, date: str) -> dict:
+        """Fetch savings data for a specific date.
+
+        GET https://enlighten.enphaseenergy.com/service/savings/systems/<site_id>/savings
+        Query params: resolution=DAY, date=YYYY-MM-DD, do_compute=true, simulated=false
+        Returns savings data including imported and exported values in USD.
+        """
+        url = f"{BASE_URL}/service/savings/systems/{self._site}/savings"
+        params = {
+            "resolution": "DAY",
+            "date": date,
+            "do_compute": "true",
+            "simulated": "false",
+        }
+        from urllib.parse import urlencode
+        query_string = urlencode(params)
+        full_url = f"{url}?{query_string}"
+
+        return await self._json("GET", full_url)
+
+    async def import_tariff(self) -> dict:
+        """Fetch import tariff data.
+
+        GET https://enlighten.enphaseenergy.com/service/tariff/tariff-ms/systems/<site_id>/tariff?include-site-details=true
+        Returns tariff structure with seasons, periods, and rates for import costs.
+        """
+        url = f"{BASE_URL}/service/tariff/tariff-ms/systems/{self._site}/tariff"
+        params = {"include-site-details": "true"}
+        from urllib.parse import urlencode
+        query_string = urlencode(params)
+        full_url = f"{url}?{query_string}"
+
+        return await self._json("GET", full_url)
+
+    async def export_tariff(self, date: str) -> dict:
+        """Fetch export tariff (buyback) data for a specific date.
+
+        GET https://enlighten.enphaseenergy.com/service/tariff/tariff-ms/systems/<site_id>/tariffs?rateType=BUYBACK&date=YYYY-MM-DD&includeUtility=
+        Returns export credit rates by hour.
+        """
+        url = f"{BASE_URL}/service/tariff/tariff-ms/systems/{self._site}/tariffs"
+        params = {
+            "rateType": "BUYBACK",
+            "date": date,
+            "includeUtility": "",
+        }
+        from urllib.parse import urlencode
+        query_string = urlencode(params)
+        full_url = f"{url}?{query_string}"
+
+        return await self._json("GET", full_url)

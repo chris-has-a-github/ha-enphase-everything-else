@@ -33,9 +33,12 @@ from .const import (
     CONF_SITE_ID,
     CONF_SITE_NAME,
     CONF_TOKEN_EXPIRES_AT,
+    CONF_VPP_PROGRAM_ID,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     OPT_API_TIMEOUT,
+    OPT_ENABLE_MONETARY_DEVICE,
+    OPT_ENABLE_VPP_DEVICE,
     OPT_FAST_POLL_INTERVAL,
     OPT_FAST_WHILE_STREAMING,
     OPT_NOMINAL_VOLTAGE,
@@ -151,12 +154,14 @@ class EnphaseEVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             serials = user_input.get(CONF_SERIALS)
             scan_interval = int(user_input.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
+            vpp_program_id = user_input.get(CONF_VPP_PROGRAM_ID, "").strip()
             selected = self._normalize_serials(serials)
             if selected:
-                return await self._finalize_login_entry(selected, scan_interval)
+                return await self._finalize_login_entry(selected, scan_interval, vpp_program_id)
             errors["base"] = "serials_required"
 
         default_scan = self._default_scan_interval()
+        default_vpp = self._default_vpp_program_id()
 
         if self._chargers:
             options = [
@@ -169,6 +174,7 @@ class EnphaseEVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         {"select": {"options": options, "multiple": True}}
                     ),
                     vol.Optional(CONF_SCAN_INTERVAL, default=default_scan): int,
+                    vol.Optional(CONF_VPP_PROGRAM_ID, default=default_vpp): str,
                 }
             )
         else:
@@ -176,12 +182,13 @@ class EnphaseEVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 {
                     vol.Required(CONF_SERIALS): selector({"text": {"multiline": True}}),
                     vol.Optional(CONF_SCAN_INTERVAL, default=default_scan): int,
+                    vol.Optional(CONF_VPP_PROGRAM_ID, default=default_vpp): str,
                 }
             )
 
         return self.async_show_form(step_id="devices", data_schema=schema, errors=errors)
 
-    async def _finalize_login_entry(self, serials: list[str], scan_interval: int) -> FlowResult:
+    async def _finalize_login_entry(self, serials: list[str], scan_interval: int, vpp_program_id: str = "") -> FlowResult:
         if not self._auth_tokens or not self._selected_site_id:
             return self.async_abort(reason="unknown")
 
@@ -199,6 +206,8 @@ class EnphaseEVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_REMEMBER_PASSWORD: self._remember_password,
             CONF_EMAIL: self._email,
         }
+        if vpp_program_id:
+            data[CONF_VPP_PROGRAM_ID] = vpp_program_id
         if self._remember_password and self._password:
             data[CONF_PASSWORD] = self._password
         else:
@@ -261,6 +270,11 @@ class EnphaseEVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if self._reconfigure_entry:
             return int(self._reconfigure_entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
         return DEFAULT_SCAN_INTERVAL
+
+    def _default_vpp_program_id(self) -> str:
+        if self._reconfigure_entry:
+            return str(self._reconfigure_entry.data.get(CONF_VPP_PROGRAM_ID, ""))
+        return ""
 
     def _get_reconfigure_entry(self) -> ConfigEntry | None:
         if hasattr(super(), "_get_reconfigure_entry"):
@@ -379,6 +393,14 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     OPT_NOMINAL_VOLTAGE,
                     default=self._entry.options.get(OPT_NOMINAL_VOLTAGE, 240),
                 ): int,
+                vol.Optional(
+                    OPT_ENABLE_MONETARY_DEVICE,
+                    default=self._entry.options.get(OPT_ENABLE_MONETARY_DEVICE, True),
+                ): bool,
+                vol.Optional(
+                    OPT_ENABLE_VPP_DEVICE,
+                    default=self._entry.options.get(OPT_ENABLE_VPP_DEVICE, True),
+                ): bool,
                 vol.Optional("reauth", default=False): bool,
                 vol.Optional("forget_password", default=False): bool,
             }

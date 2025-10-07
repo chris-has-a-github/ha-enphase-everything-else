@@ -1,19 +1,21 @@
-# Enphase EV Charger 2 (Cloud) — Home Assistant Custom Integration
+# Enphase Cloud Things — Home Assistant Custom Integration
 
 <!-- Badges -->
-[![Release](https://img.shields.io/github/v/release/barneyonline/ha-enphase-ev-charger?display_name=tag&sort=semver)](https://github.com/barneyonline/ha-enphase-ev-charger/releases)
-[![Stars](https://img.shields.io/github/stars/barneyonline/ha-enphase-ev-charger)](https://github.com/barneyonline/ha-enphase-ev-charger/stargazers)
-[![License](https://img.shields.io/github/license/barneyonline/ha-enphase-ev-charger)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/chris-has-a-github/ha-enphase-ev-charger?display_name=tag&sort=semver)](https://github.com/chris-has-a-github/ha-enphase-ev-charger/releases)
+[![Stars](https://img.shields.io/github/stars/chris-has-a-github/ha-enphase-ev-charger)](https://github.com/chris-has-a-github/ha-enphase-ev-charger/stargazers)
+[![License](https://img.shields.io/github/license/chris-has-a-github/ha-enphase-ev-charger)](LICENSE)
 
-[![Tests](https://img.shields.io/github/actions/workflow/status/barneyonline/ha-enphase-ev-charger/tests.yml?branch=main&label=tests)](https://github.com/barneyonline/ha-enphase-ev-charger/actions/workflows/tests.yml)
-[![Hassfest](https://img.shields.io/github/actions/workflow/status/barneyonline/ha-enphase-ev-charger/hassfest.yml?branch=main&label=hassfest)](https://github.com/barneyonline/ha-enphase-ev-charger/actions/workflows/hassfest.yml)
-[![Quality Scale Check](https://img.shields.io/github/actions/workflow/status/barneyonline/ha-enphase-ev-charger/quality_scale.yml?branch=main&label=quality%20scale%20check)](https://github.com/barneyonline/ha-enphase-ev-charger/actions/workflows/quality_scale.yml)
+[![Tests](https://img.shields.io/github/actions/workflow/status/chris-has-a-github/ha-enphase-ev-charger/tests.yml?branch=main&label=tests)](https://github.com/chris-has-a-github/ha-enphase-ev-charger/actions/workflows/tests.yml)
+[![Hassfest](https://img.shields.io/github/actions/workflow/status/chris-has-a-github/ha-enphase-ev-charger/hassfest.yml?branch=main&label=hassfest)](https://github.com/chris-has-a-github/ha-enphase-ev-charger/actions/workflows/hassfest.yml)
+[![Quality Scale Check](https://img.shields.io/github/actions/workflow/status/chris-has-a-github/ha-enphase-ev-charger/quality_scale.yml?branch=main&label=quality%20scale%20check)](https://github.com/chris-has-a-github/ha-enphase-ev-charger/actions/workflows/quality_scale.yml)
 
-[![Quality Scale](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbarneyonline%2Fha-enphase-ev-charger%2Fmain%2Fcustom_components%2Fenphase_ev%2Fmanifest.json&query=%24.quality_scale&label=quality%20scale&cacheSeconds=3600)](https://developers.home-assistant.io/docs/integration_quality_scale_index)
-[![Integration Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbarneyonline%2Fha-enphase-ev-charger%2Fmain%2Fcustom_components%2Fenphase_ev%2Fmanifest.json&query=%24.version&label=integration%20version&cacheSeconds=3600)](custom_components/enphase_ev/manifest.json)
+[![Quality Scale](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchris-has-a-github%2Fha-enphase-ev-charger%2Fmain%2Fcustom_components%2Fenphase_ev%2Fmanifest.json&query=%24.quality_scale&label=quality%20scale&cacheSeconds=3600)](https://developers.home-assistant.io/docs/integration_quality_scale_index)
+[![Integration Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchris-has-a-github%2Fha-enphase-ev-charger%2Fmain%2Fcustom_components%2Fenphase_ev%2Fmanifest.json&query=%24.version&label=integration%20version&cacheSeconds=3600)](custom_components/enphase_ev/manifest.json)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz)
 
-[![Open Issues](https://img.shields.io/github/issues/barneyonline/ha-enphase-ev-charger)](https://github.com/barneyonline/ha-enphase-ev-charger/issues)
+[![Open Issues](https://img.shields.io/github/issues/chris-has-a-github/ha-enphase-ev-charger)](https://github.com/chris-has-a-github/ha-enphase-ev-charger/issues)
+
+> **Note:** This is a fork of the original [Enphase EV Charger 2 (Cloud)](https://github.com/barneyonline/ha-enphase-ev-charger) integration by [@barneyonline](https://github.com/barneyonline).
 
 This custom integration surfaces the **Enphase IQ EV Charger 2** in Home Assistant using the same **Enlighten cloud** endpoints used by the Enphase mobile app and adds:
 
@@ -28,21 +30,21 @@ This custom integration surfaces the **Enphase IQ EV Charger 2** in Home Assista
 Recommended: HACS
 1. In Home Assistant, open **HACS → Integrations**.
 2. Click the three‑dot menu → **Custom repositories**.
-3. Add `https://github.com/barneyonline/ha-enphase-ev-charger` with category **Integration**.
-4. In HACS, search for and open **Enphase EV Charger 2 (Cloud)**, then click **Download/Install**.
+3. Add `https://github.com/chris-has-a-github/ha-enphase-ev-charger` with category **Integration**.
+4. In HACS, search for and open **Enphase Cloud Things**, then click **Download/Install**.
 5. Restart Home Assistant.
-6. Go to **Settings → Devices & Services → + Add Integration → Enphase EV Charger 2 (Cloud)** and follow the prompts.
+6. Go to **Settings → Devices & Services → + Add Integration → Enphase Cloud Things** and follow the prompts.
 
 Alternative: Manual copy
 1. Copy the `custom_components/enphase_ev/` folder into your Home Assistant `config/custom_components/` directory.
 2. Restart Home Assistant.
-3. Add the integration via **Settings → Devices & Services → + Add Integration → Enphase EV Charger 2 (Cloud)**.
+3. Add the integration via **Settings → Devices & Services → + Add Integration → Enphase Cloud Things**.
 
 ## Authentication
 
 **Preferred: Sign in with Enlighten credentials**
 
-1. In Home Assistant, go to **Settings → Devices & Services → + Add Integration** and pick **Enphase EV Charger 2 (Cloud)**.
+1. In Home Assistant, go to **Settings → Devices & Services → + Add Integration** and pick **Enphase Cloud Things**.
 2. Enter the Enlighten email address and password that you use at https://enlighten.enphaseenergy.com/.
 3. (Optional) Enable **Remember password** if you want Home Assistant to re-use it for future re-authentications.
 4. After login, select your site and tick the chargers you want to add, then finish the flow.
@@ -54,6 +56,7 @@ If the login form reports that multi-factor authentication is required, complete
 | Entity Type | Description |
 | --- | --- |
 | Site sensor | Last Successful Update timestamp and Cloud Latency in milliseconds. |
+| Site sensor (VPP) | VPP Events sensor (when VPP program ID is configured) showing event count with full event data in attributes. |
 | Site binary sensor | Cloud Reachable indicator (on/off). |
 | Switch | Per-charger charging control (on/off). |
 | Button | Start Charging and Stop Charging actions for each charger. |
@@ -106,7 +109,8 @@ When Enphase exposes owner-scope EV endpoints locally, we can add a local client
 - Polling intervals: Configure slow (idle) and fast (charging) intervals. The integration auto‑switches and also uses a short fast window after Start/Stop to reflect changes faster.
 - API timeout: Default 15s (Options → API timeout).
 - Nominal voltage: Default 240 V; used to estimate power from amps when the API omits power.
- - Fast while streaming: On by default; prefers faster polling while an explicit cloud live stream is active.
+- Fast while streaming: On by default; prefers faster polling while an explicit cloud live stream is active.
+- VPP Program ID: (Optional) Configure a Virtual Power Plant program ID to enable VPP events tracking. When set, a VPP Events sensor will be created showing event counts and details.
 
 ### System Health & Diagnostics
 
@@ -133,7 +137,7 @@ When Enphase exposes owner-scope EV endpoints locally, we can add a local client
 ### Reconfigure
 
 - You can reconfigure the integration (switch sites, update charger selection, or refresh credentials) without removing it.
-- Go to Settings → Devices & Services → Integrations → Enphase EV Charger 2 (Cloud) → Reconfigure, then sign in with your Enlighten credentials.
+- Go to Settings → Devices & Services → Integrations → Enphase Cloud Things → Reconfigure, then sign in with your Enlighten credentials.
 - Stored passwords pre-fill automatically; otherwise you will be asked to provide them during the flow.
 
 ### Supported devices
@@ -147,5 +151,5 @@ When Enphase exposes owner-scope EV endpoints locally, we can add a local client
 ### Removing the integration
 
 - Go to Settings → Devices & Services → Integrations.
-- Locate “Enphase EV Charger 2 (Cloud)” and choose “Delete” to remove the integration and its devices.
+- Locate "Enphase Cloud Things" and choose "Delete" to remove the integration and its devices.
 - If installed via HACS, you may also remove the repository entry from HACS after removal.

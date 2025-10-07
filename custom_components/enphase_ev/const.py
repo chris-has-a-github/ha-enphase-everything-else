@@ -13,6 +13,7 @@ CONF_EMAIL = "email"
 CONF_PASSWORD = "password"
 CONF_REMEMBER_PASSWORD = "remember_password"
 CONF_SCAN_INTERVAL = "scan_interval"
+CONF_VPP_PROGRAM_ID = "vpp_program_id"
 DEFAULT_SCAN_INTERVAL = 30
 
 # Option keys
@@ -20,6 +21,8 @@ OPT_FAST_POLL_INTERVAL = "fast_poll_interval"
 OPT_SLOW_POLL_INTERVAL = "slow_poll_interval"
 OPT_FAST_WHILE_STREAMING = "fast_while_streaming"
 OPT_NOMINAL_VOLTAGE = "nominal_voltage"
+OPT_ENABLE_MONETARY_DEVICE = "enable_monetary_device"
+OPT_ENABLE_VPP_DEVICE = "enable_vpp_device"
 
 BASE_URL = "https://enlighten.enphaseenergy.com"
 ENTREZ_URL = "https://entrez.enphaseenergy.com"

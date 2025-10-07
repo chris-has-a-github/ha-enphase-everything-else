@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.0.0
+
+**Initial Release - Enphase Cloud Things**
+
+This is the first release of the forked "Enphase Cloud Things" integration, based on the excellent work by [@barneyonline](https://github.com/barneyonline) in the [Enphase EV Charger 2 (Cloud)](https://github.com/barneyonline/ha-enphase-ev-charger) project.
+
+### Changes from upstream v0.8.7
+- Renamed integration to "Enphase Cloud Things"
+- Updated repository URLs to chris-has-a-github
+- Reset versioning to 1.0.0
+- Added HACS release configuration
+
+All features from upstream v0.8.7 are included in this release.
+
+---
+
+## Upstream Changelog (v0.8.7 and earlier)
+
 ## v0.8.7
 - Manifest: opt into Home Assistant's `import_executor` so device automation imports no longer block the event loop.
 

@@ -39,6 +39,7 @@ from .const import (
     CONF_SITE_ID,
     CONF_SITE_NAME,
     CONF_TOKEN_EXPIRES_AT,
+    CONF_VPP_PROGRAM_ID,
     DEFAULT_API_TIMEOUT,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
@@ -75,6 +76,7 @@ class EnphaseCoordinator(DataUpdateCoordinator[dict]):
             self.serials = {str(raw_serials)}
 
         self.site_name = config.get(CONF_SITE_NAME)
+        self.vpp_program_id = config.get(CONF_VPP_PROGRAM_ID)
         self._email = config.get(CONF_EMAIL)
         self._remember_password = bool(config.get(CONF_REMEMBER_PASSWORD))
         self._stored_password = config.get(CONF_PASSWORD)
@@ -134,6 +136,14 @@ class EnphaseCoordinator(DataUpdateCoordinator[dict]):
         # session duration does not grow after charging stops
         self._last_charging: dict[str, bool] = {}
         self._session_end_fix: dict[str, int] = {}
+        # Store VPP events data
+        self.vpp_events_data: dict | None = None
+        # Store savings data (imported/exported USD)
+        self.savings_data: dict | None = None
+        # Store import tariff data
+        self.import_tariff_data: dict | None = None
+        # Store export tariff data
+        self.export_tariff_data: dict | None = None
         super_kwargs = {
             "name": DOMAIN,
             "update_interval": timedelta(seconds=interval),
@@ -546,6 +556,50 @@ class EnphaseCoordinator(DataUpdateCoordinator[dict]):
                 # Prefer displayName from summary v2 for user-facing names
                 if item.get("displayName"):
                     cur["display_name"] = str(item.get("displayName"))
+
+        # Fetch VPP events data if program_id is configured
+        if self.vpp_program_id:
+            try:
+                _LOGGER.debug("Fetching VPP events for program_id: %s", self.vpp_program_id)
+                # Fetch events with default parameters (empty strings work fine)
+                vpp_data = await self.client.vpp_events(self.vpp_program_id)
+                self.vpp_events_data = vpp_data
+                _LOGGER.debug("VPP events data stored. Event count: %s",
+                             len(vpp_data.get("data", [])) if isinstance(vpp_data, dict) else "unknown")
+            except Exception as err:
+                _LOGGER.error("Failed to fetch VPP events: %s", err, exc_info=True)
+                # Don't fail the entire update if VPP fetch fails
+                pass
+
+        # Fetch today's savings data (imported/exported USD)
+        try:
+            today = dt_util.now().strftime("%Y-%m-%d")
+            savings_data = await self.client.savings_today(today)
+            self.savings_data = savings_data
+        except Exception as err:
+            _LOGGER.debug("Failed to fetch savings data: %s", err)
+            # Don't fail the entire update if savings fetch fails
+            pass
+
+        # Fetch import tariff data
+        try:
+            import_tariff_data = await self.client.import_tariff()
+            self.import_tariff_data = import_tariff_data
+        except Exception as err:
+            _LOGGER.debug("Failed to fetch import tariff data: %s", err)
+            # Don't fail the entire update if tariff fetch fails
+            pass
+
+        # Fetch export tariff data for today
+        try:
+            today = dt_util.now().strftime("%Y-%m-%d")
+            export_tariff_data = await self.client.export_tariff(today)
+            self.export_tariff_data = export_tariff_data
+        except Exception as err:
+            _LOGGER.debug("Failed to fetch export tariff data: %s", err)
+            # Don't fail the entire update if tariff fetch fails
+            pass
+
         # Dynamic poll rate: fast while any charging, within a fast window, or streaming
         if self.config_entry is not None:
             want_fast = any(v.get("charging") for v in out.values()) if out else False

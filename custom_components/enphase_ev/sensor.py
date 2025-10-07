@@ -13,7 +13,7 @@ from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
-from .const import DOMAIN
+from .const import DOMAIN, OPT_ENABLE_MONETARY_DEVICE, OPT_ENABLE_VPP_DEVICE
 from .coordinator import EnphaseCoordinator
 from .entity import EnphaseBaseEntity
 
@@ -25,6 +25,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     # Site-level diagnostic sensors
     entities.append(EnphaseSiteLastUpdateSensor(coord))
     entities.append(EnphaseCloudLatencySensor(coord))
+    # VPP sensors if program_id is configured - now in VPP device
+    enable_vpp = entry.options.get(OPT_ENABLE_VPP_DEVICE, True)
+    if coord.vpp_program_id and enable_vpp:
+        entities.append(EnphaseVPPEventsSensor(coord, entry))
+        entities.append(EnphaseVPPEventsTodayCountSensor(coord, entry))
+        entities.append(EnphaseVPPNextEventStartSensor(coord, entry))
+        entities.append(EnphaseVPPNextEventTypeSensor(coord, entry))
+        entities.append(EnphaseVPPFutureEventsCountSensor(coord, entry))
+    # Savings sensors (imported/exported USD) - now in monetary device
+    enable_monetary = entry.options.get(OPT_ENABLE_MONETARY_DEVICE, True)
+    if enable_monetary:
+        entities.append(EnphaseSavingsImportedTodaySensor(coord, entry))
+        entities.append(EnphaseSavingsExportedTodaySensor(coord, entry))
+        entities.append(EnphaseImportCostNowSensor(coord, entry))
+        entities.append(EnphaseExportPriceNowSensor(coord, entry))
     serials = list(coord.serials or coord.data.keys())
     for sn in serials:
         # Daily energy derived from lifetime meter; monotonic within a day
@@ -763,6 +778,54 @@ class _SiteBaseEntity(CoordinatorEntity, SensorEntity):
         )
 
 
+class _MonetaryBaseEntity(CoordinatorEntity, SensorEntity):
+    _attr_has_entity_name = True
+
+    def __init__(self, coord: EnphaseCoordinator, entry: ConfigEntry, key: str, name: str):
+        super().__init__(coord)
+        self._coord = coord
+        self._entry = entry
+        self._key = key
+        self._attr_name = name
+        self._attr_unique_id = f"{DOMAIN}_monetary_{coord.site_id}_{key}"
+
+    @property
+    def device_info(self):
+        from homeassistant.helpers.entity import DeviceInfo
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"monetary:{self._coord.site_id}")},
+            manufacturer="Enphase",
+            model="Monetary Tracking",
+            name=f"Enphase Monetary {self._coord.site_id}",
+            translation_key="enphase_monetary",
+            translation_placeholders={"site_id": str(self._coord.site_id)},
+        )
+
+
+class _VPPBaseEntity(CoordinatorEntity, SensorEntity):
+    _attr_has_entity_name = True
+
+    def __init__(self, coord: EnphaseCoordinator, entry: ConfigEntry, key: str, name: str):
+        super().__init__(coord)
+        self._coord = coord
+        self._entry = entry
+        self._key = key
+        self._attr_name = name
+        self._attr_unique_id = f"{DOMAIN}_vpp_{coord.site_id}_{coord.vpp_program_id}_{key}"
+
+    @property
+    def device_info(self):
+        from homeassistant.helpers.entity import DeviceInfo
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"vpp:{self._coord.site_id}:{self._coord.vpp_program_id}")},
+            manufacturer="Enphase",
+            model="Virtual Power Plant",
+            name=f"Enphase VPP {self._coord.site_id} {self._coord.vpp_program_id}",
+            translation_key="enphase_vpp",
+            translation_placeholders={"site_id": str(self._coord.site_id), "program_id": str(self._coord.vpp_program_id)},
+        )
+
+
 class EnphaseSiteLastUpdateSensor(_SiteBaseEntity):
     _attr_device_class = SensorDeviceClass.TIMESTAMP
     _attr_translation_key = "last_successful_update"
@@ -788,3 +851,540 @@ class EnphaseCloudLatencySensor(_SiteBaseEntity):
     @property
     def native_value(self):
         return self._coord.latency_ms
+
+
+class EnphaseVPPEventsSensor(_VPPBaseEntity):
+    _attr_translation_key = "vpp_events"
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    def __init__(self, coord: EnphaseCoordinator, entry: ConfigEntry):
+        super().__init__(coord, entry, "vpp_events", "VPP Events")
+
+    @property
+    def native_value(self):
+        """Return the count of VPP events."""
+        if not self._coord.vpp_events_data:
+            return 0
+
+        response = self._coord.vpp_events_data
+        if isinstance(response, dict):
+            events = response.get("data", [])
+            if isinstance(events, list):
+                return len(events)
+        return 0
+
+    @property
+    def extra_state_attributes(self):
+        """Return VPP events data as attributes."""
+        if not self._coord.vpp_events_data:
+            return {}
+
+        attrs = {}
+        response = self._coord.vpp_events_data
+        if isinstance(response, dict):
+            # Add metadata from response
+            meta = response.get("meta", {})
+            if meta.get("serverTimeStamp"):
+                attrs["timestamp"] = meta["serverTimeStamp"]
+            if meta.get("rowCount") is not None:
+                attrs["row_count"] = meta["rowCount"]
+
+            # Get events array
+            events = response.get("data", [])
+            if isinstance(events, list):
+                attrs["total_events"] = len(events)
+                attrs["program_id"] = self._coord.vpp_program_id
+
+                # Add summary of event statuses
+                statuses = {}
+                types = {}
+                for event in events:
+                    status = event.get("status", "unknown")
+                    event_type = event.get("type", "unknown")
+                    statuses[status] = statuses.get(status, 0) + 1
+                    types[event_type] = types.get(event_type, 0) + 1
+
+                attrs["status_summary"] = statuses
+                attrs["type_summary"] = types
+
+                # Include the most recent events (up to 5) with key details
+                recent_events = []
+                for event in events[:5]:
+                    recent_events.append({
+                        "id": event.get("id"),
+                        "name": event.get("name"),
+                        "type": event.get("type"),
+                        "status": event.get("status"),
+                        "start_time": event.get("start_time"),
+                        "end_time": event.get("end_time"),
+                        "avg_kw_discharged": event.get("avg_kw_discharged"),
+                        "avg_kw_charged": event.get("avg_kw_charged"),
+                    })
+                attrs["recent_events"] = recent_events
+
+        return attrs
+
+
+class EnphaseVPPEventsTodayCountSensor(_VPPBaseEntity):
+    _attr_translation_key = "vpp_events_today_count"
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_native_unit_of_measurement = "events"
+
+    def __init__(self, coord: EnphaseCoordinator, entry: ConfigEntry):
+        super().__init__(coord, entry, "vpp_events_today_count", "VPP Events Today Count")
+
+    @property
+    def native_value(self):
+        """Return the count of VPP events today."""
+        if not self._coord.vpp_events_data:
+            return 0
+
+        now = dt_util.now()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        today_end = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+        events = self._coord.vpp_events_data.get("data", [])
+        count = 0
+
+        for event in events:
+            start_time_str = event.get("start_time")
+            end_time_str = event.get("end_time")
+
+            if start_time_str or end_time_str:
+                try:
+                    # Parse timestamps
+                    from datetime import datetime
+                    if start_time_str:
+                        start_dt = datetime.fromisoformat(start_time_str.replace('Z', '+00:00'))
+                        # Event starts today
+                        if today_start <= start_dt <= today_end:
+                            count += 1
+                            continue
+
+                    if end_time_str:
+                        end_dt = datetime.fromisoformat(end_time_str.replace('Z', '+00:00'))
+                        # Event ends today (and we didn't already count it)
+                        if today_start <= end_dt <= today_end:
+                            count += 1
+                except Exception:
+                    continue
+
+        return count
+
+
+class EnphaseVPPNextEventStartSensor(_VPPBaseEntity):
+    _attr_translation_key = "vpp_next_event_start"
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+
+    def __init__(self, coord: EnphaseCoordinator, entry: ConfigEntry):
+        super().__init__(coord, entry, "vpp_next_event_start", "VPP Next Event Start")
+
+    @property
+    def native_value(self):
+        """Return the start timestamp of the next VPP event."""
+        if not self._coord.vpp_events_data:
+            return None
+
+        now = dt_util.now()
+        events = self._coord.vpp_events_data.get("data", [])
+        next_event = None
+        next_start = None
+
+        for event in events:
+            start_time_str = event.get("start_time")
+            if not start_time_str:
+                continue
+
+            try:
+                from datetime import datetime
+                start_dt = datetime.fromisoformat(start_time_str.replace('Z', '+00:00'))
+
+                # Only consider future events
+                if start_dt > now:
+                    if next_start is None or start_dt < next_start:
+                        next_start = start_dt
+                        next_event = event
+            except Exception:
+                continue
+
+        return next_start
+
+
+class EnphaseVPPNextEventTypeSensor(_VPPBaseEntity):
+    _attr_translation_key = "vpp_next_event_type"
+
+    def __init__(self, coord: EnphaseCoordinator, entry: ConfigEntry):
+        super().__init__(coord, entry, "vpp_next_event_type", "VPP Next Event Type")
+
+    @property
+    def native_value(self):
+        """Return the event type of the next VPP event."""
+        if not self._coord.vpp_events_data:
+            return "None"
+
+        now = dt_util.now()
+        events = self._coord.vpp_events_data.get("data", [])
+        next_event = None
+        next_start = None
+
+        for event in events:
+            start_time_str = event.get("start_time")
+            if not start_time_str:
+                continue
+
+            try:
+                from datetime import datetime
+                start_dt = datetime.fromisoformat(start_time_str.replace('Z', '+00:00'))
+
+                # Only consider future events
+                if start_dt > now:
+                    if next_start is None or start_dt < next_start:
+                        next_start = start_dt
+                        next_event = event
+            except Exception:
+                continue
+
+        if next_event:
+            return next_event.get("type", "None")
+        return "None"
+
+
+class EnphaseVPPFutureEventsCountSensor(_VPPBaseEntity):
+    _attr_translation_key = "vpp_future_events_count"
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_native_unit_of_measurement = "events"
+
+    def __init__(self, coord: EnphaseCoordinator, entry: ConfigEntry):
+        super().__init__(coord, entry, "vpp_future_events_count", "VPP Future Events Count")
+
+    @property
+    def native_value(self):
+        """Return the count of all future VPP events."""
+        if not self._coord.vpp_events_data:
+            return 0
+
+        now = dt_util.now()
+        events = self._coord.vpp_events_data.get("data", [])
+        count = 0
+
+        for event in events:
+            start_time_str = event.get("start_time")
+            if not start_time_str:
+                continue
+
+            try:
+                from datetime import datetime
+                start_dt = datetime.fromisoformat(start_time_str.replace('Z', '+00:00'))
+
+                # Count future events
+                if start_dt > now:
+                    count += 1
+            except Exception:
+                continue
+
+        return count
+
+
+class EnphaseSavingsImportedTodaySensor(_MonetaryBaseEntity):
+    _attr_translation_key = "savings_imported_today"
+    _attr_device_class = SensorDeviceClass.MONETARY
+    _attr_native_unit_of_measurement = "USD"
+    _attr_state_class = SensorStateClass.TOTAL
+
+    def __init__(self, coord: EnphaseCoordinator, entry: ConfigEntry):
+        super().__init__(coord, entry, "savings_imported_today", "Savings Imported Today")
+
+    @property
+    def native_value(self):
+        """Return today's imported value in USD."""
+        if not self._coord.savings_data:
+            return None
+
+        response = self._coord.savings_data
+        if isinstance(response, dict):
+            # Extract from nested structure: data.monetary.imported
+            data = response.get("data", {})
+            monetary = data.get("monetary", {})
+            imported = monetary.get("imported")
+
+            if imported is not None:
+                try:
+                    return round(float(imported), 2)
+                except (ValueError, TypeError):
+                    pass
+        return None
+
+    @property
+    def extra_state_attributes(self):
+        """Return additional savings data as attributes."""
+        if not self._coord.savings_data:
+            return {}
+
+        attrs = {}
+        response = self._coord.savings_data
+        if isinstance(response, dict):
+            # Add timestamp from response
+            if response.get("timestamp"):
+                attrs["timestamp"] = response["timestamp"]
+
+            # Add energy data for reference
+            data = response.get("data", {})
+            energy = data.get("energy", {})
+            if energy.get("imported") is not None:
+                attrs["energy_imported_wh"] = energy["imported"]
+
+            # Add date range
+            if data.get("startDate"):
+                attrs["date"] = data["startDate"]
+
+        return attrs
+
+
+class EnphaseSavingsExportedTodaySensor(_MonetaryBaseEntity):
+    _attr_translation_key = "savings_exported_today"
+    _attr_device_class = SensorDeviceClass.MONETARY
+    _attr_native_unit_of_measurement = "USD"
+    _attr_state_class = SensorStateClass.TOTAL
+
+    def __init__(self, coord: EnphaseCoordinator, entry: ConfigEntry):
+        super().__init__(coord, entry, "savings_exported_today", "Savings Exported Today")
+
+    @property
+    def native_value(self):
+        """Return today's exported value in USD."""
+        if not self._coord.savings_data:
+            return None
+
+        response = self._coord.savings_data
+        if isinstance(response, dict):
+            # Extract from nested structure: data.monetary.exported
+            data = response.get("data", {})
+            monetary = data.get("monetary", {})
+            exported = monetary.get("exported")
+
+            if exported is not None:
+                try:
+                    return round(float(exported), 2)
+                except (ValueError, TypeError):
+                    pass
+        return None
+
+    @property
+    def extra_state_attributes(self):
+        """Return additional savings data as attributes."""
+        if not self._coord.savings_data:
+            return {}
+
+        attrs = {}
+        response = self._coord.savings_data
+        if isinstance(response, dict):
+            # Add timestamp from response
+            if response.get("timestamp"):
+                attrs["timestamp"] = response["timestamp"]
+
+            # Add energy data for reference
+            data = response.get("data", {})
+            energy = data.get("energy", {})
+            if energy.get("exported") is not None:
+                attrs["energy_exported_wh"] = energy["exported"]
+
+            # Add date range
+            if data.get("startDate"):
+                attrs["date"] = data["startDate"]
+
+        return attrs
+
+
+class EnphaseImportCostNowSensor(_MonetaryBaseEntity):
+    _attr_translation_key = "import_cost_now"
+    _attr_device_class = SensorDeviceClass.MONETARY
+    _attr_native_unit_of_measurement = "USD/kWh"
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(self, coord: EnphaseCoordinator, entry: ConfigEntry):
+        super().__init__(coord, entry, "import_cost_now", "Import Cost Now")
+
+    @property
+    def native_value(self):
+        """Return current import cost rate."""
+        if not self._coord.import_tariff_data:
+            return None
+
+        # Get current time and date info
+        now = dt_util.now()
+        current_month = now.month
+        current_day_of_week = now.weekday() + 1  # Monday=1, Sunday=7
+        minutes_from_midnight = now.hour * 60 + now.minute
+
+        tariff_data = self._coord.import_tariff_data
+        purchase = tariff_data.get("purchase", {})
+        seasons = purchase.get("seasons", [])
+
+        # Find the matching season
+        for season in seasons:
+            start_month = int(season.get("startMonth", 0))
+            end_month = int(season.get("endMonth", 0))
+
+            # Handle season wrap-around (e.g., Oct-May means 10-12 and 1-5)
+            in_season = False
+            if start_month <= end_month:
+                in_season = start_month <= current_month <= end_month
+            else:  # Wraps around year end
+                in_season = current_month >= start_month or current_month <= end_month
+
+            if not in_season:
+                continue
+
+            # Find the matching day
+            for day_group in season.get("days", []):
+                if current_day_of_week in day_group.get("days", []):
+                    # Find the matching period
+                    periods = day_group.get("periods", [])
+                    for period in periods:
+                        start_time_str = period.get("startTime", "")
+                        end_time_str = period.get("endTime", "")
+
+                        # Empty start/end means off-peak (all day)
+                        if not start_time_str and not end_time_str:
+                            rate = period.get("rate")
+                            if rate is not None:
+                                try:
+                                    return round(float(rate), 5)
+                                except (ValueError, TypeError):
+                                    pass
+                            continue
+
+                        # Parse time ranges
+                        try:
+                            start_time = int(start_time_str) if start_time_str else 0
+                            end_time = int(end_time_str) if end_time_str else 1440
+
+                            if start_time <= minutes_from_midnight < end_time:
+                                rate = period.get("rate")
+                                if rate is not None:
+                                    try:
+                                        return round(float(rate), 5)
+                                    except (ValueError, TypeError):
+                                        pass
+                        except (ValueError, TypeError):
+                            continue
+
+        return None
+
+    @property
+    def extra_state_attributes(self):
+        """Return rate components as attributes."""
+        if not self._coord.import_tariff_data:
+            return {}
+
+        # Get current time and find matching period
+        now = dt_util.now()
+        current_month = now.month
+        current_day_of_week = now.weekday() + 1
+        minutes_from_midnight = now.hour * 60 + now.minute
+
+        tariff_data = self._coord.import_tariff_data
+        purchase = tariff_data.get("purchase", {})
+        seasons = purchase.get("seasons", [])
+
+        for season in seasons:
+            start_month = int(season.get("startMonth", 0))
+            end_month = int(season.get("endMonth", 0))
+
+            in_season = False
+            if start_month <= end_month:
+                in_season = start_month <= current_month <= end_month
+            else:
+                in_season = current_month >= start_month or current_month <= end_month
+
+            if not in_season:
+                continue
+
+            for day_group in season.get("days", []):
+                if current_day_of_week in day_group.get("days", []):
+                    periods = day_group.get("periods", [])
+                    for period in periods:
+                        start_time_str = period.get("startTime", "")
+                        end_time_str = period.get("endTime", "")
+
+                        # Check if this is the matching period
+                        is_match = False
+                        if not start_time_str and not end_time_str:
+                            is_match = True
+                        else:
+                            try:
+                                start_time = int(start_time_str) if start_time_str else 0
+                                end_time = int(end_time_str) if end_time_str else 1440
+                                if start_time <= minutes_from_midnight < end_time:
+                                    is_match = True
+                            except (ValueError, TypeError):
+                                pass
+
+                        if is_match:
+                            attrs = {
+                                "period_type": period.get("type"),
+                                "season": season.get("id"),
+                            }
+                            rate_components = period.get("rateComponents", [])
+                            if rate_components:
+                                attrs["rate_components"] = rate_components
+                            return attrs
+
+        return {}
+
+
+class EnphaseExportPriceNowSensor(_MonetaryBaseEntity):
+    _attr_translation_key = "export_price_now"
+    _attr_device_class = SensorDeviceClass.MONETARY
+    _attr_native_unit_of_measurement = "USD/kWh"
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(self, coord: EnphaseCoordinator, entry: ConfigEntry):
+        super().__init__(coord, entry, "export_price_now", "Export Price Now")
+
+    @property
+    def native_value(self):
+        """Return current export price rate."""
+        if not self._coord.export_tariff_data:
+            return None
+
+        # Get current time in minutes from midnight
+        now = dt_util.now()
+        current_minutes = now.hour * 60 + now.minute
+
+        tariff_data = self._coord.export_tariff_data
+        data = tariff_data.get("data", {})
+        buyback = data.get("buyback", [])
+
+        # Find the rate for the current time
+        for period in buyback:
+            start = period.get("start", 0)
+            end = period.get("end", 0)
+
+            if start <= current_minutes <= end:
+                rate = period.get("rate")
+                if rate is not None:
+                    try:
+                        return round(float(rate), 5)
+                    except (ValueError, TypeError):
+                        pass
+
+        return None
+
+    @property
+    def extra_state_attributes(self):
+        """Return tariff details as attributes."""
+        if not self._coord.export_tariff_data:
+            return {}
+
+        tariff_data = self._coord.export_tariff_data
+        data = tariff_data.get("data", {})
+        
+        attrs = {}
+        if data.get("siteDetails"):
+            site_details = data["siteDetails"]
+            attrs["export_plan_type"] = site_details.get("exportPlanType")
+            attrs["currency"] = site_details.get("currency")
+            attrs["timezone"] = site_details.get("timezone")
+
+        return attrs

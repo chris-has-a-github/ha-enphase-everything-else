@@ -84,7 +84,16 @@
       "schedule_type": { "name": "Schedule Type" },
       "schedule_start": { "name": "Schedule Start" },
       "schedule_end": { "name": "Schedule End" },
-      "lifetime_energy": { "name": "Lifetime Energy" }
+      "lifetime_energy": { "name": "Lifetime Energy" },
+      "import_cost_now": { "name": "Import Cost Now" },
+      "export_price_now": { "name": "Export Price Now" },
+      "savings_imported_today": { "name": "Savings Imported Today" },
+      "savings_exported_today": { "name": "Savings Exported Today" },
+      "vpp_events": { "name": "VPP Events" },
+      "vpp_events_today_count": { "name": "VPP Events Today Count" },
+      "vpp_next_event_start": { "name": "VPP Next Event Start" },
+      "vpp_next_event_type": { "name": "VPP Next Event Type" },
+      "vpp_future_events_count": { "name": "VPP Future Events Count" }
     },
     "number": {
       "charging_amps": { "name": "Charging Amps" }
@@ -105,12 +114,23 @@
     "button": {
       "start_charging": { "name": "Start Charging" },
       "stop_charging": { "name": "Stop Charging" }
+    },
+    "calendar": {
+      "vpp_calendar": { "name": "VPP Events Calendar" },
+      "import_cost_calendar": { "name": "Import Cost Calendar" },
+      "export_price_calendar": { "name": "Export Price Calendar" }
     }
   }
   ,
   "device": {
     "enphase_site": {
       "name": "Enphase Site {site_id}"
+    },
+    "enphase_monetary": {
+      "name": "Enphase Monetary {site_id}"
+    },
+    "enphase_vpp": {
+      "name": "Enphase VPP {site_id} {program_id}"
     }
   }
   ,
@@ -138,6 +158,8 @@
           "fast_poll_interval": "Fast poll interval (s)",
           "slow_poll_interval": "Slow poll interval (s)",
           "fast_while_streaming": "Prefer fast polling while cloud stream active",
+          "enable_monetary_device": "Enable Monetary Info",
+          "enable_vpp_device": "Enable VPP Info",
           "reauth": "Start reauthentication",
           "forget_password": "Forget stored password"
         },
@@ -146,6 +168,8 @@
           "fast_poll_interval": "Interval to use while charging or streaming.",
           "slow_poll_interval": "Interval to use when idle.",
           "fast_while_streaming": "When enabled, fast poll during active cloud streaming.",
+          "enable_monetary_device": "Enable the monetary device with savings and tariff information.",
+          "enable_vpp_device": "Enable the VPP device with virtual power plant event information.",
           "reauth": "Launch the login flow to refresh credentials without removing the integration.",
           "forget_password": "Removes the stored password. Automatic refresh will no longer be attempted."
         }

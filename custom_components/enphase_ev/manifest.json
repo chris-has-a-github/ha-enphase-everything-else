@@ -1,19 +1,19 @@
 {
   "domain": "enphase_ev",
-  "name": "Enphase EV Charger 2 (Cloud)",
+  "name": "Enphase Cloud Things",
   "codeowners": [
-    "@barneyonline"
+    "@chris-has-a-github"
   ],
   "config_flow": true,
-  "documentation": "https://github.com/barneyonline/ha-enphase-ev-charger",
+  "documentation": "https://github.com/chris-has-a-github/ha-enphase-ev-charger",
   "import_executor": true,
   "integration_type": "hub",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/barneyonline/ha-enphase-ev-charger/issues",
+  "issue_tracker": "https://github.com/chris-has-a-github/ha-enphase-ev-charger/issues",
   "loggers": [
     "custom_components.enphase_ev"
   ],
   "quality_scale": "gold",
   "requirements": [],
-  "version": "0.8.7"
+  "version": "1.0.0"
 }
