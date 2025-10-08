@@ -7,14 +7,14 @@ import pytest
 async def test_backoff_on_429(hass, monkeypatch):
     from homeassistant.helpers.update_coordinator import UpdateFailed
 
-    from custom_components.enphase_ev.const import (
+    from custom_components.enphase_cloud_things.const import (
         CONF_COOKIE,
         CONF_EAUTH,
         CONF_SCAN_INTERVAL,
         CONF_SERIALS,
         CONF_SITE_ID,
     )
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
 
     cfg = {
         CONF_SITE_ID: "3381244",
@@ -23,7 +23,7 @@ async def test_backoff_on_429(hass, monkeypatch):
         CONF_COOKIE: "COOKIE",
         CONF_SCAN_INTERVAL: 15,
     }
-    from custom_components.enphase_ev import coordinator as coord_mod
+    from custom_components.enphase_cloud_things import coordinator as coord_mod
     monkeypatch.setattr(coord_mod, "async_get_clientsession", lambda *args, **kwargs: object())
     coord = EnphaseCoordinator(hass, cfg)
 
@@ -46,7 +46,7 @@ async def test_backoff_on_429(hass, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_dynamic_poll_switch(hass, monkeypatch):
-    from custom_components.enphase_ev.const import (
+    from custom_components.enphase_cloud_things.const import (
         CONF_COOKIE,
         CONF_EAUTH,
         CONF_SCAN_INTERVAL,
@@ -55,7 +55,7 @@ async def test_dynamic_poll_switch(hass, monkeypatch):
         OPT_FAST_POLL_INTERVAL,
         OPT_SLOW_POLL_INTERVAL,
     )
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
     # no extra imports
 
     cfg = {
@@ -72,7 +72,7 @@ async def test_dynamic_poll_switch(hass, monkeypatch):
         def async_on_unload(self, cb):
             return None
     entry = DummyEntry(options)
-    from custom_components.enphase_ev import coordinator as coord_mod
+    from custom_components.enphase_cloud_things import coordinator as coord_mod
     monkeypatch.setattr(coord_mod, "async_get_clientsession", lambda *args, **kwargs: object())
     coord = EnphaseCoordinator(hass, cfg, config_entry=entry)
 
@@ -115,7 +115,7 @@ async def test_dynamic_poll_switch(hass, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_streaming_prefers_fast(hass, monkeypatch):
-    from custom_components.enphase_ev.const import (
+    from custom_components.enphase_cloud_things.const import (
         CONF_COOKIE,
         CONF_EAUTH,
         CONF_SCAN_INTERVAL,
@@ -125,7 +125,7 @@ async def test_streaming_prefers_fast(hass, monkeypatch):
         OPT_FAST_WHILE_STREAMING,
         OPT_SLOW_POLL_INTERVAL,
     )
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
     # no extra imports
 
     cfg = {
@@ -142,7 +142,7 @@ async def test_streaming_prefers_fast(hass, monkeypatch):
         def async_on_unload(self, cb):
             return None
     entry = DummyEntry(options)
-    from custom_components.enphase_ev import coordinator as coord_mod
+    from custom_components.enphase_cloud_things import coordinator as coord_mod
     monkeypatch.setattr(coord_mod, "async_get_clientsession", lambda *args, **kwargs: object())
     coord = EnphaseCoordinator(hass, cfg, config_entry=entry)
 

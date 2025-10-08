@@ -1,6 +1,6 @@
 def test_diagnostic_entity_categories():
-    from custom_components.enphase_ev.binary_sensor import FaultedBinarySensor
-    from custom_components.enphase_ev.sensor import EnphaseConnectorStatusSensor, EnphaseStatusSensor
+    from custom_components.enphase_cloud_things.binary_sensor import FaultedBinarySensor
+    from custom_components.enphase_cloud_things.sensor import EnphaseConnectorStatusSensor, EnphaseStatusSensor
 
     class Dummy:
         data = {}

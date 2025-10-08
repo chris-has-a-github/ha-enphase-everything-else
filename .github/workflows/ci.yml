@@ -7,7 +7,7 @@ on:
       - 'release/**'
     paths:
       - 'custom_components/**'
-      - 'tests_enphase_ev/**'
+      - 'tests_enphase_cloud_things/**'
       - 'pyproject.toml'
       - '.ruff.toml'
       - '.github/workflows/ci.yml'
@@ -45,4 +45,4 @@ jobs:
       - name: Tests
         run: |
           source .venv/bin/activate
-          pytest -q tests_enphase_ev
+          pytest -q tests_enphase_cloud_things

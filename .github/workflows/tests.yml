@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - 'custom_components/**'
-      - 'tests_enphase_ev/**'
+      - 'tests_enphase_cloud_things/**'
       - 'pyproject.toml'
       - '.ruff.toml'
       - '.github/workflows/tests.yml'

@@ -8,8 +8,8 @@ pytest.importorskip("homeassistant")
 def test_vpp_calendar_next_event():
     """Test VPP Calendar returns the next upcoming event."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.calendar import EnphaseVPPCalendar
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.calendar import EnphaseVPPCalendar
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"
@@ -58,8 +58,8 @@ def test_vpp_calendar_next_event():
 
 async def test_vpp_calendar_get_events():
     """Test VPP Calendar async_get_events within date range."""
-    from custom_components.enphase_ev.calendar import EnphaseVPPCalendar
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.calendar import EnphaseVPPCalendar
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"
@@ -115,8 +115,8 @@ async def test_vpp_calendar_get_events():
 def test_vpp_calendar_no_data():
     """Test VPP Calendar with no data."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.calendar import EnphaseVPPCalendar
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.calendar import EnphaseVPPCalendar
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"
@@ -136,8 +136,8 @@ def test_vpp_calendar_no_data():
 def test_vpp_calendar_event_description():
     """Test VPP Calendar event description includes details."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.calendar import EnphaseVPPCalendar
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.calendar import EnphaseVPPCalendar
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"

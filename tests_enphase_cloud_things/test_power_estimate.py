@@ -3,7 +3,7 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_power_field_not_populated_from_status(hass, monkeypatch):
-    from custom_components.enphase_ev.const import (
+    from custom_components.enphase_cloud_things.const import (
         CONF_COOKIE,
         CONF_EAUTH,
         CONF_SCAN_INTERVAL,
@@ -13,7 +13,7 @@ async def test_power_field_not_populated_from_status(hass, monkeypatch):
         OPT_NOMINAL_VOLTAGE,
         OPT_SLOW_POLL_INTERVAL,
     )
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
 
     cfg = {
         CONF_SITE_ID: "3381244",
@@ -32,7 +32,7 @@ async def test_power_field_not_populated_from_status(hass, monkeypatch):
 
     entry = DummyEntry(options)
 
-    from custom_components.enphase_ev import coordinator as coord_mod
+    from custom_components.enphase_cloud_things import coordinator as coord_mod
     monkeypatch.setattr(coord_mod, "async_get_clientsession", lambda *args, **kwargs: object())
     coord = EnphaseCoordinator(hass, cfg, config_entry=entry)
 

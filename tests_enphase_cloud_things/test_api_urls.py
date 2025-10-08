@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from custom_components.enphase_ev.api import EnphaseEVClient
+from custom_components.enphase_cloud_things.api import EnphaseEVClient
 
 
 class StubClient(EnphaseEVClient):

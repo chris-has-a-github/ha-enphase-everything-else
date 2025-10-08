@@ -5,8 +5,8 @@ def test_power_derived_from_energy_today(monkeypatch):
 
     from homeassistant.util import dt as dt_util
 
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.sensor import EnphasePowerSensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.sensor import EnphasePowerSensor
 
     sn = "555555555555"
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
@@ -32,8 +32,8 @@ def test_energy_today_sensor_name_and_value(monkeypatch):
 
     from homeassistant.util import dt as dt_util
 
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.sensor import EnphaseEnergyTodaySensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.sensor import EnphaseEnergyTodaySensor
 
     # Minimal coordinator stub with lifetime kWh present
     sn = "482522020944"

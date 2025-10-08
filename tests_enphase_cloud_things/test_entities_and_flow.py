@@ -2,7 +2,7 @@ import pytest
 
 
 def test_power_sensor_device_class():
-    from custom_components.enphase_ev.sensor import EnphasePowerSensor
+    from custom_components.enphase_cloud_things.sensor import EnphasePowerSensor
     class Dummy:
         data = {}
     ent = EnphasePowerSensor(Dummy(), "4825")
@@ -11,7 +11,7 @@ def test_power_sensor_device_class():
 
 @pytest.mark.asyncio
 async def test_config_flow_form():
-    from custom_components.enphase_ev.config_flow import EnphaseEVConfigFlow
+    from custom_components.enphase_cloud_things.config_flow import EnphaseEVConfigFlow
     flow = EnphaseEVConfigFlow()
     flow.hass = object()
     res = await flow.async_step_user()
@@ -19,9 +19,9 @@ async def test_config_flow_form():
     assert res["step_id"] == "user"
 @pytest.mark.asyncio
 async def test_config_flow_login_happy_path(hass, monkeypatch):
-    from custom_components.enphase_ev.api import AuthTokens, ChargerInfo, SiteInfo
-    from custom_components.enphase_ev.config_flow import EnphaseEVConfigFlow
-    from custom_components.enphase_ev.const import (
+    from custom_components.enphase_cloud_things.api import AuthTokens, ChargerInfo, SiteInfo
+    from custom_components.enphase_cloud_things.config_flow import EnphaseEVConfigFlow
+    from custom_components.enphase_cloud_things.const import (
         CONF_COOKIE,
         CONF_EAUTH,
         CONF_EMAIL,
@@ -52,9 +52,9 @@ async def test_config_flow_login_happy_path(hass, monkeypatch):
         assert tokens.access_token == "token123"
         return [ChargerInfo(serial="EV123", name="Driveway Charger")]
 
-    monkeypatch.setattr("custom_components.enphase_ev.config_flow.async_authenticate", _mock_auth)
-    monkeypatch.setattr("custom_components.enphase_ev.config_flow.async_fetch_chargers", _mock_fetch)
-    monkeypatch.setattr("custom_components.enphase_ev.config_flow.async_get_clientsession", lambda hass: object())
+    monkeypatch.setattr("custom_components.enphase_cloud_things.config_flow.async_authenticate", _mock_auth)
+    monkeypatch.setattr("custom_components.enphase_cloud_things.config_flow.async_fetch_chargers", _mock_fetch)
+    monkeypatch.setattr("custom_components.enphase_cloud_things.config_flow.async_get_clientsession", lambda hass: object())
 
     flow = EnphaseEVConfigFlow()
     flow.hass = hass

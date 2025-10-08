@@ -3,8 +3,8 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_reconfigure_login_entry_shows_user_form(hass, monkeypatch):
-    from custom_components.enphase_ev.config_flow import EnphaseEVConfigFlow
-    from custom_components.enphase_ev.const import (
+    from custom_components.enphase_cloud_things.config_flow import EnphaseEVConfigFlow
+    from custom_components.enphase_cloud_things.const import (
         CONF_EMAIL,
         CONF_PASSWORD,
         CONF_REMEMBER_PASSWORD,
@@ -34,8 +34,8 @@ async def test_reconfigure_login_entry_shows_user_form(hass, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_reconfigure_manual_entry_aborts(hass, monkeypatch):
-    from custom_components.enphase_ev.config_flow import EnphaseEVConfigFlow
-    from custom_components.enphase_ev.const import CONF_SITE_ID
+    from custom_components.enphase_cloud_things.config_flow import EnphaseEVConfigFlow
+    from custom_components.enphase_cloud_things.const import CONF_SITE_ID
 
     class _Entry:
         def __init__(self) -> None:
@@ -55,8 +55,8 @@ async def test_reconfigure_manual_entry_aborts(hass, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_reauth_manual_entry_aborts(hass, monkeypatch):
-    from custom_components.enphase_ev.config_flow import EnphaseEVConfigFlow
-    from custom_components.enphase_ev.const import CONF_SITE_ID
+    from custom_components.enphase_cloud_things.config_flow import EnphaseEVConfigFlow
+    from custom_components.enphase_cloud_things.const import CONF_SITE_ID
 
     class _Entry:
         def __init__(self) -> None:

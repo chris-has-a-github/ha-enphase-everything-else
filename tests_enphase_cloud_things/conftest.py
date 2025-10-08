@@ -86,7 +86,7 @@ def hass():
 
     return DummyHass()
 
-# Ensure repository root is on sys.path for imports like 'custom_components.enphase_ev.*'
+# Ensure repository root is on sys.path for imports like 'custom_components.enphase_cloud_things.*'
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))

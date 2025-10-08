@@ -3,15 +3,15 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_charge_mode_select(hass, monkeypatch):
-    from custom_components.enphase_ev.const import (
+    from custom_components.enphase_cloud_things.const import (
         CONF_COOKIE,
         CONF_EAUTH,
         CONF_SCAN_INTERVAL,
         CONF_SERIALS,
         CONF_SITE_ID,
     )
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.select import ChargeModeSelect
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.select import ChargeModeSelect
 
     cfg = {
         CONF_SITE_ID: "3381244",
@@ -20,7 +20,7 @@ async def test_charge_mode_select(hass, monkeypatch):
         CONF_COOKIE: "COOKIE",
         CONF_SCAN_INTERVAL: 30,
     }
-    from custom_components.enphase_ev import coordinator as coord_mod
+    from custom_components.enphase_cloud_things import coordinator as coord_mod
     monkeypatch.setattr(coord_mod, "async_get_clientsession", lambda *args, **kwargs: object())
     coord = EnphaseCoordinator(hass, cfg)
 

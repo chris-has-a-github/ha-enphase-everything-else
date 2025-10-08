@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from aiohttp.client_exceptions import ClientResponseError
 
-from custom_components.enphase_ev.api import EnphaseEVClient
+from custom_components.enphase_cloud_things.api import EnphaseEVClient
 
 
 def _cre(status: int, url: str = "https://example.com/") -> ClientResponseError:

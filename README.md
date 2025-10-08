@@ -9,8 +9,8 @@
 [![Hassfest](https://img.shields.io/github/actions/workflow/status/chris-has-a-github/ha-enphase-ev-charger/hassfest.yml?branch=main&label=hassfest)](https://github.com/chris-has-a-github/ha-enphase-ev-charger/actions/workflows/hassfest.yml)
 [![Quality Scale Check](https://img.shields.io/github/actions/workflow/status/chris-has-a-github/ha-enphase-ev-charger/quality_scale.yml?branch=main&label=quality%20scale%20check)](https://github.com/chris-has-a-github/ha-enphase-ev-charger/actions/workflows/quality_scale.yml)
 
-[![Quality Scale](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchris-has-a-github%2Fha-enphase-ev-charger%2Fmain%2Fcustom_components%2Fenphase_ev%2Fmanifest.json&query=%24.quality_scale&label=quality%20scale&cacheSeconds=3600)](https://developers.home-assistant.io/docs/integration_quality_scale_index)
-[![Integration Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchris-has-a-github%2Fha-enphase-ev-charger%2Fmain%2Fcustom_components%2Fenphase_ev%2Fmanifest.json&query=%24.version&label=integration%20version&cacheSeconds=3600)](custom_components/enphase_ev/manifest.json)
+[![Quality Scale](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchris-has-a-github%2Fha-enphase-ev-charger%2Fmain%2Fcustom_components%2Fenphase_cloud_things%2Fmanifest.json&query=%24.quality_scale&label=quality%20scale&cacheSeconds=3600)](https://developers.home-assistant.io/docs/integration_quality_scale_index)
+[![Integration Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchris-has-a-github%2Fha-enphase-ev-charger%2Fmain%2Fcustom_components%2Fenphase_cloud_things%2Fmanifest.json&query=%24.version&label=integration%20version&cacheSeconds=3600)](custom_components/enphase_cloud_things/manifest.json)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz)
 
 [![Open Issues](https://img.shields.io/github/issues/chris-has-a-github/ha-enphase-ev-charger)](https://github.com/chris-has-a-github/ha-enphase-ev-charger/issues)
@@ -36,7 +36,7 @@ Recommended: HACS
 6. Go to **Settings → Devices & Services → + Add Integration → Enphase Cloud Things** and follow the prompts.
 
 Alternative: Manual copy
-1. Copy the `custom_components/enphase_ev/` folder into your Home Assistant `config/custom_components/` directory.
+1. Copy the `custom_components/enphase_cloud_things/` folder into your Home Assistant `config/custom_components/` directory.
 2. Restart Home Assistant.
 3. Add the integration via **Settings → Devices & Services → + Add Integration → Enphase Cloud Things**.
 
@@ -69,12 +69,12 @@ If the login form reports that multi-factor authentication is required, complete
 
 | Action | Description | Fields |
 | --- | --- | --- |
-| `enphase_ev.start_charging` | Start charging for the charger(s) selected via the service target; supports multiple devices. | Advanced fields: `charging_level` (optional A, 6–40), `connector_id` (optional; defaults to 1) |
-| `enphase_ev.stop_charging` | Stop charging on the charger(s) selected via the service target. | None |
-| `enphase_ev.trigger_message` | Request the selected charger(s) to send an OCPP message and return the cloud response. | `requested_message` (required; e.g. `MeterValues`). Advanced: `site_id` (optional override) |
-| `enphase_ev.clear_reauth_issue` | Clear the integration’s reauthentication repair for the chosen site device(s). | `site_id` (optional override) |
-| `enphase_ev.start_live_stream` | Request faster cloud status updates for a short period. | None |
-| `enphase_ev.stop_live_stream` | Stop the cloud live stream request. | None |
+| `enphase_cloud_things.start_charging` | Start charging for the charger(s) selected via the service target; supports multiple devices. | Advanced fields: `charging_level` (optional A, 6–40), `connector_id` (optional; defaults to 1) |
+| `enphase_cloud_things.stop_charging` | Stop charging on the charger(s) selected via the service target. | None |
+| `enphase_cloud_things.trigger_message` | Request the selected charger(s) to send an OCPP message and return the cloud response. | `requested_message` (required; e.g. `MeterValues`). Advanced: `site_id` (optional override) |
+| `enphase_cloud_things.clear_reauth_issue` | Clear the integration's reauthentication repair for the chosen site device(s). | `site_id` (optional override) |
+| `enphase_cloud_things.start_live_stream` | Request faster cloud status updates for a short period. | None |
+| `enphase_cloud_things.stop_live_stream` | Stop the cloud live stream request. | None |
 
 ## Privacy & Rate Limits
 
@@ -101,7 +101,7 @@ When Enphase exposes owner-scope EV endpoints locally, we can add a local client
 - Python 3.13 recommended. Create and activate: `python3.13 -m venv .venv && source .venv/bin/activate`
 - Install dev deps: `pip install -U pytest pytest-asyncio pytest-homeassistant-custom-component homeassistant ruff black`
 - Lint: `ruff check .`
-- Format: `black custom_components/enphase_ev`
+- Format: `black custom_components/enphase_cloud_things`
 - Run tests: `pytest -q`
 
 ### Options

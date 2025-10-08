@@ -1,5 +1,5 @@
 {
-  "domain": "enphase_ev",
+  "domain": "enphase_cloud_things",
   "name": "Enphase Cloud Things",
   "codeowners": [
     "@chris-has-a-github"
@@ -11,7 +11,7 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/chris-has-a-github/ha-enphase-ev-charger/issues",
   "loggers": [
-    "custom_components.enphase_ev"
+    "custom_components.enphase_cloud_things"
   ],
   "quality_scale": "gold",
   "requirements": [],

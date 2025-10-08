@@ -50,8 +50,8 @@ async def main() -> None:
     # Load api.py with package context so relative imports work
     import importlib.util
     import types
-    pkg_dir = ROOT / "custom_components" / "enphase_ev"
-    pkg_name = "custom_components.enphase_ev"
+    pkg_dir = ROOT / "custom_components" / "enphase_cloud_things"
+    pkg_name = "custom_components.enphase_cloud_things"
     pkg = types.ModuleType(pkg_name)
     pkg.__path__ = [str(pkg_dir)]
     sys.modules[pkg_name] = pkg

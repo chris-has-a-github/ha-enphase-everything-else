@@ -1,5 +1,5 @@
 
-DOMAIN = "enphase_ev"
+DOMAIN = "enphase_cloud_things"
 
 CONF_SITE_ID = "site_id"
 CONF_SITE_NAME = "site_name"

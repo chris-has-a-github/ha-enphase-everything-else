@@ -6,8 +6,8 @@ pytest.importorskip("homeassistant")
 def test_vpp_sensor_with_events():
     """Test VPP Events sensor shows event count with valid data."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.sensor import EnphaseVPPEventsSensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.sensor import EnphaseVPPEventsSensor
 
     # Create minimal coordinator stub
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
@@ -60,8 +60,8 @@ def test_vpp_sensor_with_events():
 def test_vpp_sensor_no_events():
     """Test VPP Events sensor when no events are present."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.sensor import EnphaseVPPEventsSensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.sensor import EnphaseVPPEventsSensor
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"
@@ -83,8 +83,8 @@ def test_vpp_sensor_no_events():
 def test_vpp_sensor_no_data():
     """Test VPP Events sensor when no data is available."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.sensor import EnphaseVPPEventsSensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.sensor import EnphaseVPPEventsSensor
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"
@@ -102,8 +102,8 @@ def test_vpp_sensor_no_data():
 def test_vpp_sensor_status_summary():
     """Test VPP Events sensor creates status and type summaries."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.sensor import EnphaseVPPEventsSensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.sensor import EnphaseVPPEventsSensor
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"
@@ -135,8 +135,8 @@ def test_vpp_event_today_binary_sensor():
     """Test VPP Event Today binary sensor."""
     from datetime import datetime, timezone
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.binary_sensor import VPPEventTodayBinarySensor
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.binary_sensor import VPPEventTodayBinarySensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"
@@ -189,8 +189,8 @@ def test_vpp_event_today_binary_sensor():
 def test_vpp_event_today_binary_sensor_no_events():
     """Test VPP Event Today binary sensor with no events today."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.binary_sensor import VPPEventTodayBinarySensor
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.binary_sensor import VPPEventTodayBinarySensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"

@@ -6,7 +6,7 @@ pytest.importorskip("homeassistant")
 
 
 def _mk_coord_with(sn: str, payload: dict):
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
     # minimal hass-free coordinator stub for entity property tests
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.data = {sn: payload}
@@ -16,7 +16,7 @@ def _mk_coord_with(sn: str, payload: dict):
 
 
 def test_charging_level_fallback():
-    from custom_components.enphase_ev.sensor import EnphaseChargingLevelSensor
+    from custom_components.enphase_cloud_things.sensor import EnphaseChargingLevelSensor
 
     sn = "482522020944"
     coord = _mk_coord_with(sn, {
@@ -32,7 +32,7 @@ def test_charging_level_fallback():
 
 
 def test_power_sensor_uses_lifetime_delta():
-    from custom_components.enphase_ev.sensor import EnphasePowerSensor
+    from custom_components.enphase_cloud_things.sensor import EnphasePowerSensor
 
     sn = "482522020944"
     coord = _mk_coord_with(
@@ -62,7 +62,7 @@ def test_power_sensor_uses_lifetime_delta():
 
 
 def test_power_sensor_zero_when_idle():
-    from custom_components.enphase_ev.sensor import EnphasePowerSensor
+    from custom_components.enphase_cloud_things.sensor import EnphasePowerSensor
 
     sn = "482522020944"
     coord = _mk_coord_with(
@@ -89,7 +89,7 @@ def test_power_sensor_zero_when_idle():
 
 
 def test_dlb_sensor_state_mapping():
-    from custom_components.enphase_ev.sensor import EnphaseDynamicLoadBalancingSensor
+    from custom_components.enphase_cloud_things.sensor import EnphaseDynamicLoadBalancingSensor
 
     sn = "482522020944"
     coord = _mk_coord_with(
@@ -115,7 +115,7 @@ def test_dlb_sensor_state_mapping():
 
 
 def test_connection_sensor_strips_whitespace():
-    from custom_components.enphase_ev.sensor import EnphaseConnectionSensor
+    from custom_components.enphase_cloud_things.sensor import EnphaseConnectionSensor
 
     sn = "482522020944"
     coord = _mk_coord_with(
@@ -135,7 +135,7 @@ def test_connection_sensor_strips_whitespace():
 
 
 def test_ip_sensor_handles_blank_values():
-    from custom_components.enphase_ev.sensor import EnphaseIpAddressSensor
+    from custom_components.enphase_cloud_things.sensor import EnphaseIpAddressSensor
 
     sn = "482522020944"
     coord = _mk_coord_with(
@@ -158,7 +158,7 @@ def test_ip_sensor_handles_blank_values():
 
 
 def test_reporting_interval_sensor_coerces_ints():
-    from custom_components.enphase_ev.sensor import EnphaseReportingIntervalSensor
+    from custom_components.enphase_cloud_things.sensor import EnphaseReportingIntervalSensor
 
     sn = "482522020944"
     coord = _mk_coord_with(
@@ -181,7 +181,7 @@ def test_reporting_interval_sensor_coerces_ints():
 
 
 def test_power_sensor_caps_max_output():
-    from custom_components.enphase_ev.sensor import EnphasePowerSensor
+    from custom_components.enphase_cloud_things.sensor import EnphasePowerSensor
 
     sn = "482522020944"
     coord = _mk_coord_with(
@@ -203,7 +203,7 @@ def test_power_sensor_caps_max_output():
 
 
 def test_power_sensor_fallback_window_when_timestamp_missing(monkeypatch):
-    from custom_components.enphase_ev.sensor import EnphasePowerSensor
+    from custom_components.enphase_cloud_things.sensor import EnphasePowerSensor
     from homeassistant.util import dt as dt_util
 
     sn = "482522020944"
@@ -232,7 +232,7 @@ def test_power_sensor_fallback_window_when_timestamp_missing(monkeypatch):
 
 
 def test_lifetime_energy_filters_resets():
-    from custom_components.enphase_ev.sensor import EnphaseLifetimeEnergySensor
+    from custom_components.enphase_cloud_things.sensor import EnphaseLifetimeEnergySensor
 
     sn = "482522020944"
     payload = {"sn": sn, "name": "Garage EV", "lifetime_kwh": 200.5}
@@ -259,7 +259,7 @@ def test_lifetime_energy_filters_resets():
 
 
 def test_session_duration_minutes():
-    from custom_components.enphase_ev.sensor import EnphaseSessionDurationSensor
+    from custom_components.enphase_cloud_things.sensor import EnphaseSessionDurationSensor
 
     sn = "482522020944"
     now = datetime.now(timezone.utc)
@@ -276,7 +276,7 @@ def test_session_duration_minutes():
 
 
 def test_phase_mode_mapping():
-    from custom_components.enphase_ev.sensor import EnphasePhaseModeSensor
+    from custom_components.enphase_cloud_things.sensor import EnphasePhaseModeSensor
 
     sn = "482522020944"
     # Numeric 1 -> Single Phase

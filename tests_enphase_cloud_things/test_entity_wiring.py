@@ -1,5 +1,5 @@
 def test_entity_naming_and_availability():
-    from custom_components.enphase_ev.sensor import EnphaseEnergyTodaySensor
+    from custom_components.enphase_cloud_things.sensor import EnphaseEnergyTodaySensor
 
     class DummyCoord:
         def __init__(self):
@@ -34,7 +34,7 @@ def test_entity_naming_and_availability():
 
 
 def test_device_info_includes_model_name_when_available():
-    from custom_components.enphase_ev.sensor import EnphaseEnergyTodaySensor
+    from custom_components.enphase_cloud_things.sensor import EnphaseEnergyTodaySensor
 
     class DummyCoord:
         def __init__(self):

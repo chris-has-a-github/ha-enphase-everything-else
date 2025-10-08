@@ -2,7 +2,7 @@ from types import SimpleNamespace
 
 
 def test_device_info_uses_display_name_and_model():
-    from custom_components.enphase_ev.entity import EnphaseBaseEntity
+    from custom_components.enphase_cloud_things.entity import EnphaseBaseEntity
 
     entity = object.__new__(EnphaseBaseEntity)
     entity._coord = SimpleNamespace(

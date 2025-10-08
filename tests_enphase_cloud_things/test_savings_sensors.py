@@ -6,8 +6,8 @@ pytest.importorskip("homeassistant")
 def test_savings_imported_sensor():
     """Test Savings Imported Today sensor with valid data."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.sensor import EnphaseSavingsImportedTodaySensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.sensor import EnphaseSavingsImportedTodaySensor
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"
@@ -35,8 +35,8 @@ def test_savings_imported_sensor():
 def test_savings_imported_sensor_rounding():
     """Test Savings Imported Today sensor rounds to 2 decimals."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.sensor import EnphaseSavingsImportedTodaySensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.sensor import EnphaseSavingsImportedTodaySensor
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"
@@ -56,8 +56,8 @@ def test_savings_imported_sensor_rounding():
 def test_savings_imported_sensor_no_data():
     """Test Savings Imported Today sensor with no data."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.sensor import EnphaseSavingsImportedTodaySensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.sensor import EnphaseSavingsImportedTodaySensor
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"
@@ -73,8 +73,8 @@ def test_savings_imported_sensor_no_data():
 def test_savings_exported_sensor():
     """Test Savings Exported Today sensor with valid data."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.sensor import EnphaseSavingsExportedTodaySensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.sensor import EnphaseSavingsExportedTodaySensor
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"
@@ -102,8 +102,8 @@ def test_savings_exported_sensor():
 def test_savings_exported_sensor_rounding():
     """Test Savings Exported Today sensor rounds to 2 decimals."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.sensor import EnphaseSavingsExportedTodaySensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.sensor import EnphaseSavingsExportedTodaySensor
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"
@@ -123,8 +123,8 @@ def test_savings_exported_sensor_rounding():
 def test_savings_exported_sensor_no_data():
     """Test Savings Exported Today sensor with no data."""
     from unittest.mock import MagicMock
-    from custom_components.enphase_ev.coordinator import EnphaseCoordinator
-    from custom_components.enphase_ev.sensor import EnphaseSavingsExportedTodaySensor
+    from custom_components.enphase_cloud_things.coordinator import EnphaseCoordinator
+    from custom_components.enphase_cloud_things.sensor import EnphaseSavingsExportedTodaySensor
 
     coord = EnphaseCoordinator.__new__(EnphaseCoordinator)
     coord.site_id = "1234321"

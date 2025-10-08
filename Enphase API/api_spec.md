@@ -239,4 +239,4 @@ The integration reuses tokens until expiry or a 401 is encountered, then prompts
 
 ## 9. References
 - Reverse-engineered from Enlighten mobile app network traces (2024–2025).
-- Implemented in `custom_components/enphase_ev/api.py` and `coordinator.py`.
+- Implemented in `custom_components/enphase_cloud_things/api.py` and `coordinator.py`.
